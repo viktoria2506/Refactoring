@@ -44,7 +44,7 @@ public class AddProductServletTest {
     public void OK() throws IOException {
         when(request.getParameter("name")).thenReturn("bla");
         when(request.getParameter("price")).thenReturn("1");
-        addProductServlet.doGet(request, response);
+        //addProductServlet.doRequest(request, response);
         assertEquals("OK\n", writer.toString());
     }
 
@@ -57,15 +57,15 @@ public class AddProductServletTest {
 
     @Test
     public void numberFormatException() {
-        assertThrows(NumberFormatException.class, () -> addProductServlet.doGet(request, response));
+        assertThrows(NumberFormatException.class, () -> addProductServlet.doRequest(request, response));
         assertEquals("", writer.toString());
 
         when(request.getParameter("name")).thenReturn("bla");
-        assertThrows(NumberFormatException.class, () -> addProductServlet.doGet(request, response));
+        assertThrows(NumberFormatException.class, () -> addProductServlet.doRequest(request, response));
         assertEquals("", writer.toString());
 
         when(request.getParameter("price")).thenReturn("not a number");
-        assertThrows(NumberFormatException.class, () -> addProductServlet.doGet(request, response));
+        assertThrows(NumberFormatException.class, () -> addProductServlet.doRequest(request, response));
         assertEquals("", writer.toString());
     }
 }
