@@ -3,7 +3,9 @@ package ru.akirakozov.sd.refactoring.servlet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import ru.akirakozov.sd.refactoring.dao.ProductDao;
+import ru.akirakozov.sd.refactoring.product.Product;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,50 +15,39 @@ import java.io.StringWriter;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Connection;
+import java.util.Arrays;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static ru.akirakozov.sd.refactoring.dao.DaoUtils.createTables;
 
 public class GetProductsServletTest {
-    @Mock
-    private ProductDao productDao;
-
+    private AbstractProductServlet servlet;
+    private final ProductDao productDao = mock(ProductDao.class);
     private final HttpServletRequest request = mock(HttpServletRequest.class);
     private final HttpServletResponse response = mock(HttpServletResponse.class);
     private final StringWriter writer = new StringWriter();
-    private final GetProductsServlet getProductsServlet = new GetProductsServlet(productDao);
-
-    private static final String DB_ADDRESS = "jdbc:sqlite:test.db";
 
     @BeforeEach
-    public void setup() throws IOException, SQLException {
+    public void setup() throws SQLException, IOException {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
-        try (final Connection connection = DriverManager.getConnection(DB_ADDRESS)) {
-            final String query = "drop table if exists product";
-            connection.prepareStatement(query).execute();
-        }
-
-        try (final Connection connection = DriverManager.getConnection(DB_ADDRESS)) {
-            final String query = "create table if not exists product(" +
-                    "id integer primary key autoincrement not null," +
-                    "name text not null," +
-                    "price int not null)";
-            connection.prepareStatement(query).execute();
-        }
+        servlet = new GetProductsServlet(productDao);
+        createTables();
     }
 
     @Test
-    public void OK() throws SQLException, IOException {
-        try (final Connection connection = DriverManager.getConnection(DB_ADDRESS)) {
-            final String query = "insert into product(name, price) values" +
-                    "('bla', '1')," +
-                    "('aaa', '0')," +
-                    "('bb', '-1')";
-            connection.prepareStatement(query).execute();
-        }
-        getProductsServlet.doGet(request, response);
+    public void OK() throws Exception {
+        when(productDao.getProducts())
+                .thenReturn(Arrays.asList(
+                        new Product("bla", 1),
+                        new Product("aaa", 0),
+                        new Product("bb", -1)
+                ));
+
+        servlet.doGet(request, response);
+
         assertEquals("<html><body>\n" +
-                "<h1>All items that we have: </h1>\n" +
                         "bla	1</br>\n" +
                         "aaa	0</br>\n" +
                         "bb	-1</br>\n" +
@@ -66,9 +57,8 @@ public class GetProductsServletTest {
 
     @Test
     public void OKEmpty() throws IOException {
-        getProductsServlet.doGet(request, response);
+        servlet.doGet(request, response);
         assertEquals("<html><body>\n" +
-                        "<h1>All items that we have: </h1>\n" +
                         "</body></html>\n"
                 , writer.toString());
     }

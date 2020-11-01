@@ -33,7 +33,6 @@ public class QueryServletTest {
     @BeforeEach
     public void setup() throws IOException, SQLException {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
-        createTables();
         servlet = new QueryServlet(productDao);
     }
 
@@ -43,6 +42,7 @@ public class QueryServletTest {
         when(productDao.findMaxPriceProduct())
                 .thenReturn(Optional.of(new Product("bla", 1)));
         servlet.doGet(request, response);
+
         assertEquals(joinResult("<h1>Product with max price: </h1>\nbla	1</br>\n"), writer.toString());
     }
 
@@ -52,6 +52,7 @@ public class QueryServletTest {
         when(productDao.findMinPriceProduct())
                 .thenReturn(Optional.of(new Product("null", -1)));
         queryServlet.doGet(request, response);
+
         assertEquals(joinResult("<h1>Product with min price: </h1>\nnull	-1</br>\n"), writer.toString());
     }
 
@@ -59,6 +60,7 @@ public class QueryServletTest {
     public void testSum() throws IOException, SQLException {
         when(request.getParameter("command")).thenReturn("sum");
         queryServlet.doGet(request, response);
+
         assertEquals(joinResult(String.format("Summary price: \n0\n")), writer.toString());
     }
 
@@ -68,6 +70,7 @@ public class QueryServletTest {
         when(productDao.getProductsCount())
                 .thenReturn(3);
         servlet.doGet(request, response);
+
         assertEquals(joinResult(String.format("Number of products: \n3\n")), writer.toString());
     }
 
@@ -75,12 +78,14 @@ public class QueryServletTest {
     public void testQueryUnknownCommand() throws IOException {
         when(request.getParameter("command")).thenReturn("unknown");
         servlet.doGet(request, response);
+
         assertEquals("Unknown command: unknown\n", writer.toString());
     }
 
     @Test
     public void testQueryNullCommand() throws IOException {
         servlet.doGet(request, response);
+
         assertEquals("Unknown command: null\n", writer.toString());
     }
 }
