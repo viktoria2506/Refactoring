@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static ru.akirakozov.sd.refactoring.dao.DaoUtils.createTables;
 
 public class QueryServletTest {
     private AbstractProductServlet servlet;
@@ -23,9 +22,7 @@ public class QueryServletTest {
     private final HttpServletRequest request = mock(HttpServletRequest.class);
     private final HttpServletResponse response = mock(HttpServletResponse.class);
     private final StringWriter writer = new StringWriter();
-    private final QueryServlet queryServlet = new QueryServlet(productDao);
 
-    private static final String DB_ADDRESS = "jdbc:sqlite:test.db";
     private String joinResult(String res) {
         return "<html><body>\n" + res + "</body></html>\n";
     }
@@ -51,15 +48,15 @@ public class QueryServletTest {
         when(request.getParameter("command")).thenReturn("min");
         when(productDao.findMinPriceProduct())
                 .thenReturn(Optional.of(new Product("null", -1)));
-        queryServlet.doGet(request, response);
+        servlet.doGet(request, response);
 
         assertEquals(joinResult("<h1>Product with min price: </h1>\nnull	-1</br>\n"), writer.toString());
     }
 
     @Test
-    public void testSum() throws IOException, SQLException {
+    public void testSum() {
         when(request.getParameter("command")).thenReturn("sum");
-        queryServlet.doGet(request, response);
+        servlet.doGet(request, response);
 
         assertEquals(joinResult(String.format("Summary price: \n0\n")), writer.toString());
     }
