@@ -12,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Connection;
 
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
