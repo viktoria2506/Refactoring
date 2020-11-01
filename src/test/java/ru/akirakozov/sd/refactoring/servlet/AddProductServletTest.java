@@ -2,6 +2,8 @@ package ru.akirakozov.sd.refactoring.servlet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import ru.akirakozov.sd.refactoring.dao.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,10 +20,13 @@ import static org.mockito.Mockito.*;
 import static ru.akirakozov.sd.refactoring.dao.DaoUtils.createTables;
 
 public class AddProductServletTest {
+    @Mock
+    private ProductDao productDao;
+
     private final HttpServletRequest request = mock(HttpServletRequest.class);
     private final HttpServletResponse response = mock(HttpServletResponse.class);
     private final StringWriter writer = new StringWriter();
-    private final AddProductServlet addProductServlet = new AddProductServlet();
+    private final AddProductServlet addProductServlet = new AddProductServlet(productDao);
 
     private static final String DB_ADDRESS = "jdbc:sqlite:test.db";
 
@@ -32,7 +37,6 @@ public class AddProductServletTest {
             final String query = "drop table if exists product";
             connection.prepareStatement(query).execute();
         }
-
         createTables();
     }
 

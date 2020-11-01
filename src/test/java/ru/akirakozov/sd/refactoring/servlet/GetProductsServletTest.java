@@ -2,6 +2,8 @@ package ru.akirakozov.sd.refactoring.servlet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import ru.akirakozov.sd.refactoring.dao.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,10 +18,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class GetProductsServletTest {
+    @Mock
+    private ProductDao productDao;
+
     private final HttpServletRequest request = mock(HttpServletRequest.class);
     private final HttpServletResponse response = mock(HttpServletResponse.class);
     private final StringWriter writer = new StringWriter();
-    private final GetProductsServlet getProductsServlet = new GetProductsServlet();
+    private final GetProductsServlet getProductsServlet = new GetProductsServlet(productDao);
 
     private static final String DB_ADDRESS = "jdbc:sqlite:test.db";
 

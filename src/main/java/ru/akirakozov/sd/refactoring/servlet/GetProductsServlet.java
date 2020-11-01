@@ -1,28 +1,21 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import ru.akirakozov.sd.refactoring.dao.ProductDao;
 
-import ru.akirakozov.sd.refactoring.servlet.*;
+import static ru.akirakozov.sd.refactoring.html.ProductHTML.printProductsHTML;
 
 /**
  * @author akirakozov
  */
-public class GetProductsServlet extends HttpServlet {
+public class GetProductsServlet extends AbstractProductServlet {
+    public GetProductsServlet(ProductDao productDao) {
+        super(productDao);
+    }
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws IOException {
-        ServletCommon.doGoodies                                                   (
-            response                                                              ,
-            (Statement stmt) ->                                                   {
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT")         ;
-                ServletCommon.dumpItems(response, rs, "All items that we have")   ;});
+    protected void doRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        printProductsHTML(productDao.getProducts(), response.getWriter());
     }
 }
