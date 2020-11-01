@@ -1,5 +1,7 @@
 package ru.akirakozov.sd.refactoring.dao;
 
+import ru.akirakozov.sd.refactoring.product.Product;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

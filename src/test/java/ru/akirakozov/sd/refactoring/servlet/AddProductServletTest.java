@@ -15,6 +15,8 @@ import java.sql.Connection;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import static ru.akirakozov.sd.refactoring.dao.DaoUtils.createTables;
+
 public class AddProductServletTest {
     private final HttpServletRequest request = mock(HttpServletRequest.class);
     private final HttpServletResponse response = mock(HttpServletResponse.class);
@@ -31,13 +33,7 @@ public class AddProductServletTest {
             connection.prepareStatement(query).execute();
         }
 
-        try (final Connection connection = DriverManager.getConnection(DB_ADDRESS)) {
-            final String query = " create table if not exists product(" +
-                        "id integer primary key autoincrement not null," +
-                        "name text not null," +
-                        "price int not null)";
-            connection.prepareStatement(query).execute();
-        }
+        createTables();
     }
 
     @Test
